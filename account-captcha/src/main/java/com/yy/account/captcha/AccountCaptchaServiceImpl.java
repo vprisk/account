@@ -1,0 +1,80 @@
+package com.yy.account.captcha;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.imageio.ImageIO;
+
+import org.springframework.beans.factory.InitializingBean;
+
+import com.google.code.kaptcha.impl.DefaultKaptcha;
+import com.google.code.kaptcha.util.Config;
+
+public class AccountCaptchaServiceImpl implements AccountCaptchaService, InitializingBean {
+	private DefaultKaptcha producer;
+	private Map<String,String> captchaMap=new HashMap<String,String>();
+	private List<String> preDefinedTexts;
+	private int textCount=0;
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		producer=new DefaultKaptcha();
+		producer.setConfig(new Config(new Properties()));
+	}
+	private String getCaptchaText(){
+		if (preDefinedTexts!=null&&!preDefinedTexts.isEmpty()) {
+			String text=preDefinedTexts.get(textCount);
+			textCount=(textCount+1)%preDefinedTexts.size();
+			return text;
+		}else{
+			return producer.createText();
+		}
+	}
+	@Override
+	public String generateCaptchaKey() {
+		String key=RandomGenerator.getRandomString();
+		String value=getCaptchaText();
+		captchaMap.put(key, value);
+		return key;
+	}
+
+	@Override
+	public byte[] generateCaptchaImage(String captchaKey) throws Exception {
+		String text=captchaMap.get(captchaKey);
+		if (text==null) {
+			throw new Exception("captcha key:"+captchaKey+" not fond");
+		}
+		BufferedImage image=producer.createImage(text);
+		ByteArrayOutputStream out=new ByteArrayOutputStream();
+		ImageIO.write(image, "jpg", out);
+		return out.toByteArray();
+	}
+
+	@Override
+	public boolean validateCaptcha(String captchaKey, String captchaValue) throws Exception {
+		String text = captchaMap.get(captchaKey);
+		if (text==null) {
+			throw new Exception("captcha key:"+captchaKey+" not fond");
+		}
+		if (text.equals(captchaValue)) {
+			captchaMap.remove(captchaKey);
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	@Override
+	public List<String> getPreDefinedTexts() {
+		return preDefinedTexts;
+	}
+
+	@Override
+	public void setPreDefinedTexts(List<String> definedTexts) {
+		this.preDefinedTexts=definedTexts;
+	}
+
+}
