@@ -31,7 +31,7 @@ public class AccountEmailServiceImpl implements AccountEmailService {
 	public void sendMail(String to, String subject, String htmlText) throws Exception {
 		try {
 			MimeMessage msg=javaMailSender.createMimeMessage();
-			MimeMessageHelper msgHelper=new MimeMessageHelper(msg);
+			MimeMessageHelper msgHelper=new MimeMessageHelper(msg,"UTF-8");
 			msgHelper.setFrom(systemEmail); 
 			msgHelper.setTo(to);
 			msgHelper.setSubject(subject);
