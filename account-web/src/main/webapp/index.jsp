@@ -17,7 +17,7 @@
 		<input placeholder="确认密码"><br><br>
 		<input placeholder="邮箱"><br><br>
 		<input placeholder="验证码"><br><br>
-		<img alt="验证码" src=""><br><br>
+		<img alt="验证码" src="Captcha" style="display: block;width: 173px;"><br><br>
 		<input type="submit" value="提交注册">
 	</form>
 </body>

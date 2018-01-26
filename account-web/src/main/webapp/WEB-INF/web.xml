@@ -10,6 +10,7 @@
     <param-value>
     	classpath:/account-email.xml
     	classpath:/account-persist.xml
+    	classpath:/account-captcha.xml
     	classpath:/account-service.xml
     	</param-value> 
   </context-param>   
